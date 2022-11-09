@@ -196,7 +196,7 @@ create table ITEM(
 	ITEM_ENDDATE         date not null
     );
     
-alter table ITEM add constraint FK_ITEM_ITEMT_ID foreign key (ITEM_ID) references ITEM_TYPE (ITEMT_ID);
+alter table ITEM add constraint FK_ITEM_ITEMT_ID foreign key (ITEMT_ID) references ITEM_TYPE (ITEMT_ID);
     
 insert into ITEM (ITEMT_ID, ITEM_NAME, ITEM_CONTENT, ITEM_PRICE, ITEM_AMOUNT, ITEM_STATUS, ITEM_DATE, ITEM_ENDDATE)
     value (1, '[Zeniter先立特] 頂級無穀幼母犬1.2kg 幼母犬糧 狗飼料', '好吃喔', 499, 999, 0, '2020-01-01', '2023-12-30');
@@ -406,8 +406,8 @@ CREATE_TIME timestamp default current_timestamp comment "發布時間",
 constraint FK_NEWS_EMP_ID foreign key (EMP_ID) references EMP (EMP_ID)
 );
 insert into NEWS(EMP_ID, NEWS_TITLE, NEWS_CONTENT) values
-(1, "更新上班打卡時間", "為了給同仁更優質的上班彈性，我們決定將打卡時間放寬為9:00~10:00"),
-(2, "寵物福利品", "即期貓狗飼料員工價一包50元，需要請找福委");
+(1, "Barei開幕慶!!!全館滿千折100", "2022/12/1~2022/12/31凡在Barei消費單一訂單滿1000原現折200元!"),
+(2, "寵物食品特賣會", "即期貓狗飼料一包只要30元!!!數量有限，趕快手刀結帳去!");
 
 -- 創建 最新消息照片 表格
 create table NEWS_PICTURE(
@@ -575,6 +575,8 @@ references ITEM(ITEM_ID)
 insert into FAVORITE_LIST(MEM_ID,ITEM_ID) values(1,1);
 insert into FAVORITE_LIST(MEM_ID,ITEM_ID) values(2,2);
 
+    -- 創建論壇按讚表格 --
+    
 create table LIKE_HATE(
 MEM_ID int not null comment '會員編號',
 ARTICLE_ID int not null comment '文章編號',
@@ -619,3 +621,4 @@ values(1, 1, 2), (2, 2, 1);
 -- SELECT * FROM EFFECT;
 -- SELECT * FROM LIKE_HATE;
 -- drop database ba_rei;
+SELECT * FROM article_identity WHERE upload_time = (select MAX(upload_time) FROM article_identity WHERE mem_id = 3)
