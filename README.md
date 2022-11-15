@@ -1,3 +1,0 @@
-# BareiDoc
-s
-123

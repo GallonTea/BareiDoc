@@ -62,6 +62,21 @@ constraint fk_NOTIFICATION_MEM_ID foreign key (MEM_ID) references MEMBER(MEM_ID)
 insert into NOTIFICATION(MEM_ID,NTF_CONTEXT,NTF_TIME,NTF_READ)
 values(2,'just test','2022-10-14 12:10:10',0);
 
+-- 新增認證碼表格
+create table VERIFY_CODE(
+VC_ID int not null auto_increment comment "驗證碼編號",
+MEM_ID int not null comment "會員編號",
+VC_code varchar(20) not null comment "驗證碼編號",
+VC_TIME timestamp default current_timestamp comment "生產時間",
+primary key (VC_ID),
+constraint FK_VERIFY_CODE_MEM_ID foreign key (MEM_ID) references MEMBER (MEM_ID)
+);
+
+
+insert into VERIFY_CODE(MEM_ID,VC_CODE)
+values
+(1,"r5Y7IE35"),
+(2,"R0y3F7gU");
 
 -- 新增功能表格
 create table EFFECT(
@@ -191,7 +206,7 @@ create table ITEM(
 	ITEM_CONTENT         text not null,
 	ITEM_PRICE           int not null,
 	ITEM_AMOUNT          int not null,
-	ITEM_STATUS          tinyint not null comment '0:未上架, 1:已上架;',
+	ITEM_STATUS          tinyint not null default 0 comment '0:未上架, 1:已上架;',
 	ITEM_DATE            date not null,
 	ITEM_ENDDATE         date not null
     );
@@ -271,7 +286,7 @@ create table COMMODITY_DETAILS(
     );
     
 alter table COMMODITY_DETAILS add constraint FK_COMMODITY_DETAILS_ORDER_ID foreign key (ORDER_ID) references ORDER_BUY (ORDER_ID);
-alter table COMMODITY_DETAILS add constraint FK_COMMODITY_DETAILS_ITEM_ID foreign key (ITEM_ID) references ITEM (ITEM_ID);
+alter table COMMODITY_DETAILS add constraint FK_COMMODITY_DETAILS_ITEM_ID foreign key (ITEM_ID) references ITEM (ITEM_ID) on delete cascade;
 
 insert into COMMODITY_DETAILS (ORDER_ID, ITEM_ID, ITEM_NAME, CD_AMOUNT, ITEM_PRICE) value (1, 1, '[Zeniter先立特] 頂級無穀幼母犬1.2kg 幼母犬糧 狗飼料', 3, 499);
 
@@ -286,7 +301,7 @@ create table SHOP_REVIEW(
 	SHOP_SATISFACTION    tinyint comment '1至5顆星'
     );
     
-alter table SHOP_REVIEW add constraint FK_SHOP_REVIEW_ITEM_ID foreign key (ITEM_ID) references ITEM (ITEM_ID);
+alter table SHOP_REVIEW add constraint FK_SHOP_REVIEW_ITEM_ID foreign key (ITEM_ID) references ITEM (ITEM_ID) on delete cascade;
 alter table SHOP_REVIEW add constraint FK_SHOP_REVIEW_MEM_ID foreign key (MEM_ID) references `MEMBER` (MEM_ID);
    
 insert into SHOP_REVIEW (ITEM_ID, MEM_ID, SHOP_COMMENT_CONTENT, SHOP_COMMENT_DATE, SHOP_SATISFACTION)
@@ -299,7 +314,7 @@ create table ITEM_PHOTOS(
 	IP_PHOTO             longblob comment '移除not null方便放入假資料'
     );
     
-alter table ITEM_PHOTOS add constraint ITEM_ID foreign key (ITEM_ID) references ITEM (ITEM_ID);
+alter table ITEM_PHOTOS add constraint ITEM_ID foreign key (ITEM_ID) references ITEM (ITEM_ID) on delete cascade;
 
 insert into ITEM_PHOTOS (ITEM_ID) value (1);
 insert into ITEM_PHOTOS (ITEM_ID) value (2);
@@ -387,6 +402,7 @@ AFREP_STATUS tinyint not null default 0 comment "檢舉狀態 0: 待審核  1: �
 AFREP_RESULT tinyint not null default 0 comment "審核結果 0: 尚未審核完畢 1: 檢舉屬實 2: 檢舉不屬實",
 EMP_ID int,
 AFREP_DATE timestamp default current_timestamp comment "檢舉日期",
+HANDLE_DATE timestamp on update current_timestamp comment"檢舉處理時間",
 constraint FK_ARTICLE_REPORT_ARTICLE_ID foreign key (ARTICLE_ID) references ARTICLE (ARTICLE_ID),
 constraint FK_ARTICLE_REPORT_MEM_ID foreign key (MEM_ID) references `MEMBER` (MEM_ID),
 constraint FK_ARTICLE_REPORT_EMP_ID foreign key (EMP_ID) references EMP (EMP_ID)
@@ -570,7 +586,7 @@ primary key (MEM_ID,ITEM_ID),
 constraint FK_FAVORITE_LIST_MEM_ID foreign key (MEM_ID)
 references `MEMBER`(MEM_ID),
 constraint FK_FAVORITE_LIST_ITEM_ID foreign key (ITEM_ID)
-references ITEM(ITEM_ID)
+references ITEM(ITEM_ID) on delete cascade
 );
 insert into FAVORITE_LIST(MEM_ID,ITEM_ID) values(1,1);
 insert into FAVORITE_LIST(MEM_ID,ITEM_ID) values(2,2);
@@ -621,4 +637,3 @@ values(1, 1, 2), (2, 2, 1);
 -- SELECT * FROM EFFECT;
 -- SELECT * FROM LIKE_HATE;
 -- drop database ba_rei;
-SELECT * FROM article_identity WHERE upload_time = (select MAX(upload_time) FROM article_identity WHERE mem_id = 3)
